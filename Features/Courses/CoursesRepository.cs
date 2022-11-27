@@ -89,7 +89,7 @@ namespace MongoDbExample.Features.Courses
             return await _courses.Find<Course>(c => true).ToListAsync();
         }
 
-        public async Task<Course> GetById(string id)
+        public async Task<Course> GetByIdAsync(string id)
         {
             return await _courses.Find<Course>(c => c.Id == id).FirstOrDefaultAsync();
         }

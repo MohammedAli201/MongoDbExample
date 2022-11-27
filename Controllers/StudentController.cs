@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MongoDbExample.DTOs;
+using MongoDbExample.Features.Courses;
+using MongoDbExample.Features.Students;
 using MongoDbExample.Features.Users;
 using MongoDbExample.Models;
 
@@ -13,11 +15,11 @@ using MongoDbExample.Models;
 [ApiController]
 public class StudentController : ControllerBase
 {
-    private readonly StudentService _studentService;
-    private readonly CourseService _courseService;
+    private readonly IStudentRepository _studentService;
+    private readonly ICoursesRepository _courseService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
-    public StudentController(StudentService service, UserManager<ApplicationUser> userManager, IMapper mapper, CourseService courseService)
+    public StudentController(IStudentRepository service, UserManager<ApplicationUser> userManager, IMapper mapper, ICoursesRepository courseService)
     {
         _studentService = service;
         _userManager = userManager;

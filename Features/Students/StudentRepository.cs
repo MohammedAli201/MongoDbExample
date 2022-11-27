@@ -1,3 +1,4 @@
+using MongoDB.Driver;
 using MongoDbExample.DTOs;
 using MongoDbExample.Models;
 
@@ -5,34 +6,47 @@ namespace MongoDbExample.Features.Students
 {
     public class StudentRepository : IStudentRepository
     {
-        Task<Student> IStudentRepository.Create(StudentDTO student)
+
+        private readonly IMongoCollection<Student> _students;
+
+        public StudentRepository(ISchoolDatabaseSettings settings)
+        {
+            var client = new MongoClient(settings.ConnectionString);
+            var database = client.GetDatabase(settings.DatabaseName);
+            _students = database.GetCollection<Student>(settings.StudentsCollectionName);
+        }
+
+        public async Task<Student> CreateAsync(Student student)
+        {
+            await _students.InsertOneAsync(student);
+            return student;
+        }
+
+        public async Task DeleteAsync(string id)
+        {
+            await _students.DeleteOneAsync(s => s.Id == id);
+        }
+
+        public bool Exist(string email)
         {
             throw new NotImplementedException();
         }
 
-        void IStudentRepository.Delete(string id)
+        public async Task<IEnumerable<Student>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _students.Find(s => true).ToListAsync();
         }
 
-        bool IStudentRepository.Exist(string email)
+        public async Task<Student> GetByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            return await _students.Find<Student>(s => s.Id == id).FirstOrDefaultAsync();
+
         }
 
-        Task<IEnumerable<Student>> IStudentRepository.GetAllAsync()
+        public async Task UpdateAsync(string id, Student student)
         {
-            throw new NotImplementedException();
-        }
+            await _students.ReplaceOneAsync(s => s.Id == id, student);
 
-        Task<Student> IStudentRepository.GetById(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IStudentRepository.Update(Student student, string oldPassword, string newPassword)
-        {
-            throw new NotImplementedException();
         }
     }
 }
