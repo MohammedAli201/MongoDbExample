@@ -19,12 +19,14 @@ public class UserController : ControllerBase
     private readonly IUserRepository _userService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
+    private readonly IConfiguration _configuration;
     // private readonly AppSettings _appSettings;
-    public UserController(UserManager<ApplicationUser> userManager, IUserRepository userService, IMapper mapper)
+    public UserController(UserManager<ApplicationUser> userManager, IUserRepository userService, IMapper mapper, IConfiguration configuration)
     {
         _userManager = userManager;
         _userService = userService;
         _mapper = mapper;
+        _configuration = configuration;
 
     }
 
@@ -49,7 +51,7 @@ public class UserController : ControllerBase
             }),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("/uVxQ~NyP}w0A=$<FQ;4;`rXI\\'9]7wb<(yB")), SecurityAlgorithms.HmacSha256Signature)
+                new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SigningKey"] ?? throw new InvalidOperationException("Set Jwt__SigningKey in the environment."))), SecurityAlgorithms.HmacSha256Signature)
         };
 
         foreach (var role in _userManager.GetRolesAsync(user).Result)
